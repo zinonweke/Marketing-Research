@@ -1,0 +1,110 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+# Load add on R packages
+```{r}
+library('lmtest')
+library('lubridate')
+#library('verh.table')
+library('reshape2')
+library('dplyr')
+library('stringr')
+library('readxl')
+library('broom')
+#library('carverh')
+library('car')
+library('tidyr')
+library('ggplot2')
+library('nortest')
+library('tseries')
+library('equatiomatic')
+library(stargazer)
+
+```
+
+# Import sanexset
+```{r}
+
+sanexsets <- read.csv("/Users/macbookpro/Documents/Advanced Marketing/Question_3_sanex_109290306_1649659256880.csv", header = T, sep = ";", dec = ",")
+
+getwd()
+sanex <- sanexsets
+head(sanex)
+```
+
+# Cleaning Dataset
+```{r}
+
+sanex1 <- sanex
+#columns <- colnames(sanex)
+sane <- sanex
+
+## Convert number columns to numeric
+for(i in 1:ncol(sane)) {       
+    if(i == 1 | i == 2) next
+    sane[, i] <- as.numeric(gsub(",", ".", sane[, i]))
+}
+ 
+sanex <- sane
+str(sanex)
+
+head(sanex)
+```
+
+
+# Decriptive statistics
+```{r}
+## Box Plot - Price
+boxplot(sanex$DOVEPrice, sanex$FAPrice, sanex$NIVEAPrice, sanex$REXONAPrice, sanex$VOGUEPrice, sanex$X.8X4Price, sanex$AXEPrice,
+        names = c("DOVE", "FA", "NIVEA", "REXONA", "VOGUE", "X.8X4", "SANEX"), col = "red", xlab = "BRANDS", ylab = "PRICES ($)")
+
+
+## Barplot - Quarterly Sales
+ggplot(sanex, aes(QUARTER, SANEXSales)) + geom_col(colour = "red") + ggtitle("SANEX QUARTERLY SALES") + theme_light()
+
+## Barplot - Quarterly Sales
+ggplot(sanex, aes(Chain, SANEXSales)) + geom_col(colour = "blue") + ggtitle("SANEX QUARTERLY SALES") + theme_light()
+
+str(sanex)
+```
+
+
+# Run multiplicative model
+
+We now estimate the following model:
+
+$S_t = \theta\Pi_{j=1}^{J}(P_{jt}^{\gamma_{1}} \gamma_{2}^{F_{jt}} \gamma_{3}^{D_{jt}} \gamma_{4}^{FD_{jt}})Temp_{t}^{\gamma_{5}} \gamma_{6}^{D_{easter,t}}\gamma_{7}^{D_{xmas,t}}\epsilon_{t}$
+
+```{r}
+result <- lm(log(SANEXSales) ~ log(SANEXPrice) + log(DOVEPrice) + log(FAPrice) + log(NIVEAPrice) + log(REXONAPrice) + log(VOGUEPrice+1) + SANEXFEAT + DOVEFEAT + FAFEAT + NIVEAFEAT + REXONAFEAT + VOGUEFEAT + SANEXFEAT + DOVEFEAT + FAFEAT + NIVEAFEAT + REXONAFEAT + VOGUEFEAT + SANEXDISP + DOVEDISP + FADISP + NIVEADISP + REXONADISP + VOGUEDISP + SANEXDISP + DOVEDISP + FADISP + NIVEADISP + REXONADISP + VOGUEDISP + SANEXDF + DOVEDF + FADF + NIVEADF + REXONADF + VOGUEDF + SANEXDF + DOVEDF + FADF + NIVEADF + REXONADF + VOGUEDF + as.factor(Chain) + as.factor(QUARTER), data = sanex) 
+
+res <- summary(result)
+
+tabs <- stargazer(result, type = "text", title = "Multiplicative Regression Model to Explain SANEX Sales")
+?stargazer
+class(tabs)
+res
+
+cofs <- summary(result)$coefficients
+cofs
+class(cofs)
+
+?strsplit
+
+
+cofs <- as.data.frame(cofs)
+head(cofs)
+write.xlsx(cofs, file = "/Users/macbookpro/Documents/Advanced Marketing/Coefficients.xlsx")
+
+```
+
+
+```{r}
+
+```
+
+
+
