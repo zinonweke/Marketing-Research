@@ -1,0 +1,54 @@
+---
+title: "Assigment 2"
+author: "Obed Baffour Akoto Kutin"
+date: "9/28/2021"
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+bibliography: export.bib
+---
+### Children Playfulness
+
+Playfulness of children is usually a concern for most parents; a playful child is mostly translated to be a happy child. [@Guitard2005] defined playfulness as "an internal predisposition characterized by creativity, curiosity, pleasure, sense of humor, and spontaneity". The study of [@Rigby2007] examined the playfulness of children depending on their environment, it considered the context of home and school. [@Rigby2007] suggested that the playfulness of a child depended on the external factors of their environments that goes beyond the individual. The study of [@atara] suggested that the playfulness of the mother and father with the child has an impact on the child's negativity. [@Fabrizi2016] further considered the usefulness of playgroups in promoting playfulness among children. (@gwen) studied the effects of child playfulness on their adulthood lifestyles.
+
+#### CHILD MEME
+
+![THINKING CHILD](./thinking child.jpeg)
+
+
+#### DATA PRESENTATION
+
+```{r, echo=TRUE}
+
+library(tidyverse)
+
+messy <- data.frame(id = 1:4,
+                    trt = sample(rep(c('control', 'treatment'), each = 2)),
+                    work_T1 = runif(4),
+                    home_T1 = runif(4),
+                    work_T2 = runif(4),
+                    home_T2 = runif(4))
+messy
+```
+
+#### Data Type: The data is in "wide-format"
+
+```{r, echo=TRUE}
+messy_longer <- messy %>% pivot_longer(!c(id, trt), names_to = "location", values_to = "time_spent")
+
+messy_longer
+```
+
+```{r, echo=TRUE}
+messy_longer %>% separate(location, c("location", "interval/times"))
+
+```
+
+### Bibliography
+
+
+
+
+
+
